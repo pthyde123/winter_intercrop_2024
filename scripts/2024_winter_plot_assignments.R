@@ -1,9 +1,9 @@
 
 library(tidyverse)
-library(readxl)
+library(readr)
 
 #import randomization
-design <- read_excel("2024_winter_trials/draft_WinterOatDesign.xlsx")
+design <- read_csv("data/WinterOatDesign.csv")
 
 #remove KY plots, keeping NY plot
 ny_design <- design %>% 
@@ -43,7 +43,7 @@ plot_design <- plot_design %>%
 #select and organize columens and save as csv
 plot_design %>% 
   select(plot,pair,block,accession,state,crop,source,inter_crop) %>% 
-  write.csv("2024_winter_oat_pea_plot_design")
+  write.csv("output/2024_winter_oat_pea_plot_design")
   
   
   
