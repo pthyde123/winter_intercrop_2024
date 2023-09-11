@@ -35,7 +35,9 @@ plot_design <- all_pairs %>%
 
 #clean up the interplot name to indicate sole pea and barley
 plot_design <- plot_design %>% 
-  mutate(inter_crop = if_else(plot_design$crop == "Pea", "pea",plot_design$inter_crop)) %>% 
+  mutate("inter_crop" = if_else(plot_design$crop == "Pea", "pea",plot_design$inter_crop)) 
+  
+plot_design <- plot_design %>%  
   mutate("inter_crop" = if_else(crop == "Barley", 
                            str_replace(plot_design$inter_crop,"oat","barley"),
                            plot_design$inter_crop )) 
@@ -43,7 +45,7 @@ plot_design <- plot_design %>%
 #select and organize columens and save as csv
 plot_design %>% 
   select(plot,pair,block,accession,state,crop,source,inter_crop) %>% 
-  write.csv("output/2024_winter_oat_pea_plot_design")
+  write.csv("output/2024_winter_oat_pea_plot_design.csv",row.names = F)
   
   
   
