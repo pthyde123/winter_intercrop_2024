@@ -1,0 +1,205 @@
+block,accession,state,crop,source
+Block1,NF12AS-122-4_3,KY,Oat,Nobel
+Block1,NF12AS-108-4_4,KY,Oat,Nobel
+Block1,NF13-4124-4_8,KY,Oat,Nobel
+Block1,NF13-4083-4_6,KY,Oat,Nobel
+Block1,PI 555733,KY,Oat,Nobel
+Block1,NF13-4173-4_4,KY,Oat,Nobel
+Block1,NF13-4157-4_2,KY,Oat,Nobel
+Block1,NF00407,KY,Oat,Nobel
+Block1,NF502_5,KY,Oat,Nobel
+Block1,NF13-4124-4_3,KY,Oat,Nobel
+Block1,NF13-4124-4_3,KY,Oat,Nobel
+Block1,NF12AS-122-4_4,KY,Oat,Nobel
+Block1,PI 555733,KY,Oat,Nobel
+Block1,NF12AS-107-4_2-1,KY,Oat,Nobel
+Block1,NF12AS-108-4_1,KY,Oat,Nobel
+Block1,NF97405-1,KY,Oat,Nobel
+Block1,NF12AS-91-4_1,KY,Oat,Nobel
+Block1,NF13-4083-4_6,KY,Oat,Nobel
+Block1,NF97405B2,KY,Oat,Nobel
+Block1,Ozark,KY,Oat,Nobel
+Block1,NF12AS-108-4_1,KY,Oat,Nobel
+Block1,Okay,KY,Oat,Nobel
+Block1,NF13-4157-4_2,KY,Oat,Nobel
+Block1,NF12AS-108-4_4,KY,Oat,Nobel
+Block2,NF01401B,NY,Oat,Nobel
+Block2,NF502_5,NY,Oat,Nobel
+Block2,NC20-4452,NY,Oat,UON
+Block2,FLLA17088-77,NY,Oat,UON
+Block2,TX18OCS9125,NY,Oat,UON
+Block2,Okay,NY,Oat,Nobel
+Block2,NC21-6429,NY,Oat,NCSU-ALT
+Block2,CalypsonBarley,NY,Barley,Barley
+Block2,Clav 6982,NY,Oat,Nobel
+Block2,NF12AS-91-4_1,NY,Oat,Nobel
+Block2,Aurora,NY,Oat,Nobel
+Block2,NF05424_2,NY,Oat,Nobel
+Block2,NF13-4214-4_5,NY,Oat,Nobel
+Block2,FLLA17069-52,NY,Oat,UON
+Block2,NC20-4526,NY,Oat,UON
+Block2,FLLA17069-53,NY,Oat,UON
+Block2,SCLA17031SBSS-4-1,NY,Oat,UON
+Block2,TX18OCS9104,NY,Oat,UON
+Block2,LA08039SBSBS-56-A1,NY,Oat,Nobel
+Block2,BlazePea,NY,Pea,Pea
+Block3,Savage,NY,Oat,UON
+Block3,NC19-3542,NY,Oat,UON
+Block3,FLLA17088-77,NY,Oat,UON
+Block3,NC20-4551,NY,Oat,UON
+Block3,LA17089SBS-45-1-1,NY,Oat,UON
+Block3,PI 555733,NY,Oat,Nobel
+Block3,Harrison,NY,Oat,Nobel
+Block3,BlazePea,NY,Pea,Pea
+Block3,NF13-4124-4_3,NY,Oat,Nobel
+Block3,NC21-6505,NY,Oat,NCSU-ALT
+Block3,NC21-6497,NY,Oat,NCSU-ALT
+Block3,NF12AS-122-4_3,NY,Oat,Nobel
+Block3,Gerard 227,NY,Oat,NCSU-ALT
+Block3,TX18OCS9100,NY,Oat,UON
+Block3,FLLA17069-65,NY,Oat,UON
+Block3,TX18OCS9104,NY,Oat,UON
+Block3,NC21-6475,NY,Oat,NCSU-ALT
+Block3,NY_ExptBarley,NY,Barley,Barley
+Block3,NF13-4157-4_2,NY,Oat,Nobel
+Block3,NF13-4083-4_6,NY,Oat,Nobel
+Block4,NC21-6576,NY,Oat,NCSU-ALT
+Block4,SCLA17018SBSS-45-1,NY,Oat,UON
+Block4,LA15015SB-S50,NY,Oat,UON
+Block4,ViolettaBarley,NY,Barley,Barley
+Block4,TX19CAS0058,NY,Oat,UON
+Block4,NF99401_1-1,NY,Oat,Nobel
+Block4,NC20-4452,NY,Oat,UON
+Block4,NC21-6610,NY,Oat,NCSU-ALT
+Block4,FLLA17069-54,NY,Oat,UON
+Block4,ScalaBarley,NY,Barley,Barley
+Block4,FLLA17069-53,NY,Oat,UON
+Block4,NF12AS-122-4_4,NY,Oat,Nobel
+Block4,BlazePea,NY,Pea,Pea
+Block4,FLLA17069-65,NY,Oat,UON
+Block4,NF13-4173-4_5,NY,Oat,Nobel
+Block4,LA17153SBSS-46-1,NY,Oat,UON
+Block4,LA99016,NY,Oat,UON
+Block4,Harrison,NY,Oat,Nobel
+Block4,Clav 7618,NY,Oat,Nobel
+Block4,Horizon 578,NY,Oat,NCSU-ALT
+Block5,NC21-6492,NY,Oat,NCSU-ALT
+Block5,NC20-4526,NY,Oat,UON
+Block5,NY_ExptBarley,NY,Barley,Barley
+Block5,Nora,NY,Oat,Nobel
+Block5,LightningBarley,NY,Barley,Barley
+Block5,FLLA17069-54,NY,Oat,UON
+Block5,BlazePea,NY,Pea,Pea
+Block5,NC20-4402,NY,Oat,UON
+Block5,SCLA17080SBS-4-2,NY,Oat,UON
+Block5,NF13-4126-4_3,NY,Oat,Nobel
+Block5,NF12AS-122-4_3,NY,Oat,Nobel
+Block5,NC09-4503N,NY,Oat,NCSU-ALT
+Block5,NF13-4124-4_8,NY,Oat,Nobel
+Block5,NF12AS-122-4_4,NY,Oat,Nobel
+Block5,NF13-4214-4_1,NY,Oat,Nobel
+Block5,TX19CAS0057,NY,Oat,UON
+Block5,NF01404A,NY,Oat,Nobel
+Block5,NF12AS-108-4_1,NY,Oat,Nobel
+Block5,LA17129SBSS-8-1,NY,Oat,UON
+Block5,NF13-4153-4_2,NY,Oat,Nobel
+Block6,NF13-4214-4_5,NY,Oat,Nobel
+Block6,NC09-4503N,NY,Oat,NCSU-ALT
+Block6,NF99414-1,NY,Oat,Nobel
+Block6,NC18-5877N,NY,Oat,UON
+Block6,LA17153SBSS-46-1,NY,Oat,UON
+Block6,NC20-4402,NY,Oat,UON
+Block6,LA17153SBSS-55-1,NY,Oat,UON
+Block6,NF12AS-107-4_4,NY,Oat,Nobel
+Block6,ScalaBarley,NY,Barley,Barley
+Block6,BlazePea,NY,Pea,Pea
+Block6,NC20-4702,NY,Oat,NCSU-ALT
+Block6,FLLA17088-61,NY,Oat,UON
+Block6,LA17069SBSS-2-1,NY,Oat,UON
+Block6,NF12AS-107-4_2-1,NY,Oat,Nobel
+Block6,Horizon 201,NY,Oat,NCSU-ALT
+Block6,PI 555733,NY,Oat,Nobel
+Block6,Ozark,NY,Oat,Nobel
+Block6,Gerard 224,NY,Oat,UON
+Block6,LA08039SBSBS-56-A1,NY,Oat,Nobel
+Block6,NC20-4551,NY,Oat,UON
+Block7,PI 555736,NY,Oat,Nobel
+Block7,TX19CAS0057,NY,Oat,UON
+Block7,NF00407,NY,Oat,Nobel
+Block7,Gerard 224,NY,Oat,UON
+Block7,NF13-4214-4_1,NY,Oat,Nobel
+Block7,BlazePea,NY,Pea,Pea
+Block7,LA17089SBS-45-1-1,NY,Oat,UON
+Block7,LA15015SB-S50,NY,Oat,UON
+Block7,NF12AS-100-4_2,NY,Oat,Nobel
+Block7,SaturnBarley,NY,Barley,Barley
+Block7,Winter Hayden,NY,Oat,Martens
+Block7,Okay,NY,Oat,Nobel
+Block7,Clav 6982,NY,Oat,Nobel
+Block7,LA99016,NY,Oat,UON
+Block7,Clav 4476,NY,Oat,Nobel
+Block7,NF12AS-73-4_3,NY,Oat,Nobel
+Block7,LA17069SBSS-2-1,NY,Oat,UON
+Block7,NC20-4700,NY,Oat,UON
+Block7,Gerard 227,NY,Oat,NCSU-ALT
+Block7,NF12AS-108-4_4,NY,Oat,Nobel
+Block8,NF12AS-91-4_1,NY,Oat,Nobel
+Block8,NF12AS-100-4_2,NY,Oat,Nobel
+Block8,NF12AS-107-4_2-1,NY,Oat,Nobel
+Block8,NF401_1,NY,Oat,Nobel
+Block8,NC19-3542,NY,Oat,UON
+Block8,NF97405B2,NY,Oat,Nobel
+Block8,BlazePea,NY,Pea,Pea
+Block8,TX18OCS9100,NY,Oat,UON
+Block8,NF01401B,NY,Oat,Nobel
+Block8,NF13-4173-4_6,NY,Oat,Nobel
+Block8,NC18-5877N,NY,Oat,UON
+Block8,NF18,NY,Oat,Nobel
+Block8,LightningBarley,NY,Barley,Barley
+Block8,TX19CAS0058,NY,Oat,UON
+Block8,Horizon 578,NY,Oat,NCSU-ALT
+Block8,NF97405-1,NY,Oat,Nobel
+Block8,NF00407,NY,Oat,Nobel
+Block8,NF13-4153-4_2,NY,Oat,Nobel
+Block8,Juggernaut,NY,Oat,UON
+Block8,LA17075SBSS-29-1,NY,Oat,UON
+Block9,NF97405-1,NY,Oat,Nobel
+Block9,FLLA11019-8,NY,Oat,UON
+Block9,LA17153SBSS-55-1,NY,Oat,UON
+Block9,FLLA16083-25,NY,Oat,UON
+Block9,ViolettaBarley,NY,Barley,Barley
+Block9,NC17-6440,NY,Oat,NCSU-ALT
+Block9,SCLA17031SBSS-4-1,NY,Oat,UON
+Block9,SCLA17018SBSS-45-1,NY,Oat,UON
+Block9,BlazePea,NY,Pea,Pea
+Block9,LA17129SBSS-8-1,NY,Oat,UON
+Block9,SCLA17080SBS-4-2,NY,Oat,UON
+Block9,Horizon 201,NY,Oat,NCSU-ALT
+Block9,Winter Hayden,NY,Oat,Martens
+Block9,NC21-6502,NY,Oat,NCSU-ALT
+Block9,FLLA17069-52,NY,Oat,UON
+Block9,Juggernaut,NY,Oat,UON
+Block9,NC21-6609,NY,Oat,NCSU-ALT
+Block9,SaturnBarley,NY,Barley,Barley
+Block9,NF13-4157-4_2,NY,Oat,Nobel
+Block9,Savage,NY,Oat,UON
+Block10,NF13-4126-4_3,NY,Oat,Nobel
+Block10,FLLA17088-61,NY,Oat,UON
+Block10,NF13-4173-4_5,NY,Oat,Nobel
+Block10,NF12AS-108-4_4,NY,Oat,Nobel
+Block10,NF13-4083-4_6,NY,Oat,Nobel
+Block10,NC20-4795,NY,Oat,NCSU-ALT
+Block10,NF13-4124-4_3,NY,Oat,Nobel
+Block10,FLLA16083-25,NY,Oat,UON
+Block10,BlazePea,NY,Pea,Pea
+Block10,FLLA11019-8,NY,Oat,UON
+Block10,LA17075SBSS-29-1,NY,Oat,UON
+Block10,NF12AS-107-4_4,NY,Oat,Nobel
+Block10,NC20-4700,NY,Oat,UON
+Block10,CalypsonBarley,NY,Barley,Barley
+Block10,NC21-6511,NY,Oat,NCSU-ALT
+Block10,NF13-4173-4_4,NY,Oat,Nobel
+Block10,NF97405B2,NY,Oat,Nobel
+Block10,TX18OCS9125,NY,Oat,UON
+Block10,NF12AS-108-4_1,NY,Oat,Nobel
+Block10,NF99414,NY,Oat,Nobel
