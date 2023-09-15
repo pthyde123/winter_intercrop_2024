@@ -42,9 +42,11 @@ plot_design <- plot_design %>%
                                 str_replace(plot_design$inter_crop,"oat","barley"),
                                 plot_design$inter_crop )) 
 
+plot_design<-plot_design %>% 
+  select(plot,pair,block,accession,state,crop,source,inter_crop) %>% 
+  mutate(plot = as.numeric(plot))
 
-
-
+####adding in extra 18 plots 9 pairs of sole pea in order to have nice square blocks
 
 pea_plot_add_in <- plot_design %>% 
   filter(inter_crop == "pea") %>% 
@@ -53,15 +55,20 @@ pea_plot_add_in <- plot_design %>%
   mutate(pair_rand = runif(n = 9, min = 0, max = 20)) %>%
   mutate(base_pair_rand = base_pair + pair_rand) %>% 
   mutate(pair = base_pair_rand) %>% 
-  select(plot,pair,block,accession,state,crop,source,inter_crop)
-  
-
-
- 
-
-
-
-#select and organize columens and save as csv
-plot_design %>% 
+  mutate(plot = 9999) %>% 
   select(plot,pair,block,accession,state,crop,source,inter_crop) %>% 
+  mutate(count = (2)) %>% 
+  uncount(count)
+
+plots <- bind_rows(pea_plot_add_in,plot_design) %>% 
+  arrange(pair)
+
+plots <-  plots %>% mutate("plot_2" = seq(1:nrow(plots))) %>% 
+  mutate(old_plot = plot) %>% 
+  mutate(plot= plot_2) %>% 
+  select(plot:inter_crop,old_plot)
+
+
+#save as csv
+plots %>% 
   write.csv("output/2024_winter_oat_pea_plot_design_2.csv",row.names = F)
