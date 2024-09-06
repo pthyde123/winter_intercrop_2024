@@ -1,16 +1,24 @@
 
 library(tidyverse)
-library(readxl)
-
-X2024_winter_data <- read_excel("Intercrop JLJ/2024_winter/2024_winter_intercrop/data/2024_winter_data.xlsx", 
-                                sheet = "2024_winter_subplot")
+library(readr)
 
 
 
+Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
 
-X2024_winter_data %>% 
-  select(plot_number,subplot_number,subplot_id,accession_name,`Grain weight - g			|CO_350:0005123`) %>%
-  mutate("grain_weight" = as.numeric(`Grain weight - g			|CO_350:0005123`)) %>% 
-  group_by(accession_name) %>% 
-  filter(grain_weight == max(grain_weight,na.rm=TRUE)) %>% 
-  write.table("clipboard", sep="\t", row.names=FALSE)
+
+colnames(Cornell_WinterOatPeaIntercrop_2024_Ithaca)
+
+  
+  
+Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
+    select(observationUnitName,plotNumber,observationLevel,germplasmName,`Grain weight - g|CO_350:0005123`) %>% 
+    filter(observationLevel == "plot")  %>%
+    group_by(germplasmName) %>% 
+    filter(`Grain weight - g|CO_350:0005123` == max(`Grain weight - g|CO_350:0005123`,na.rm=TRUE)) %>% 
+    arrange(plotNumber) %>% 
+    filter(germplasmName != "NO_OATS_PLANTED") %>% 
+    filter(germplasmName != "Winter Hayden") %>% 
+    write.csv('output/winter_2024_accession_max_seedlots.csv')
+  
+  

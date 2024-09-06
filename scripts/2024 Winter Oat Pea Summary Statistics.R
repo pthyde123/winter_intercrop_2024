@@ -108,6 +108,42 @@ plot_data %>%
       theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
       theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 
+###
+ 
+
+plot_data %>%
+  group_by(inter_crop) %>% 
+  summarise_at(c("oat_yield", "pea_yield"), mean, na.rm=TRUE)
+
+
+plot_data %>%
+  filter(inter_crop == "oat") %>% 
+  group_by(germplasmName) %>% 
+  summarise(oat_y = mean(oat_yield)) %>% 
+  mutate(oat_mean = 227) %>% 
+  mutate(oat_dif = oat_y-oat_mean) %>% 
+  arrange(-oat_dif)
+
+
+plot_data %>%
+  filter(inter_crop == "oat-pea") %>% 
+  group_by(germplasmName) %>% 
+  summarise(oat_y = mean(oat_yield)) %>% 
+  mutate(oat_mean = 227) %>% 
+  mutate(oat_dif = oat_y-oat_mean) %>% 
+  arrange(-oat_dif)
+
+
+
+plot_data %>%
+  group_by(germplasmName, inter_crop) %>% 
+  summarise(oat_y = mean(oat_yield)) %>% 
+  pivot_wider(names_from = inter_crop, values_from = oat_y) %>% 
+  mutate(oat_dif = (`oat-pea`- oat)) %>% 
+  arrange(-oat_dif) %>% 
+  print(n=95)
+  
+
 
 
 
@@ -150,4 +186,91 @@ plot_data %>%
   theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))+
   facet_wrap(~source)
+
+
+
+
+#### Biomass
+
+
+Cornell_WinterOatPeaIntercrop_2024_Ithaca
+Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta
+
+
+
+
+
+plot_data <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
+  mutate("plot_name" = if_else(observationLevel == "subplot",str_sub(observationUnitName,end = -11), observationUnitName)) %>% 
+  left_join(Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta,join_by(plot_name) ) %>% 
+  rowwise() %>% 
+  mutate(pea_yield = if_else(inter_crop == "pea",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Pea grain yield - g/m2|COMP:0000049` )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "oat",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Grain yield - g/m2|CO_350:0000260` )) %>% 
+  mutate(pea_yield = if_else(inter_crop == "oat", 0 , pea_yield )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "pea", 0 , oat_yield )) %>% 
+  select(observationLevel,observationUnitDbId,inter_crop ,source,
+         replicate,plotNumber,germplasmName, inter_crop,
+         oat_yield,
+         pea_yield,
+         `Lodging severity - 0-9 Rating|CO_350:0005007`,
+         `Freeze damage severity - 0-9 Rating|CO_350:0005001`,
+         `Winter survival - percent|CO_350:0000170`) %>% 
+  filter(observationLevel == "plot") %>% 
+  filter(source != "Barley") %>% 
+  filter(source != "Martens") %>% 
+  mutate("total_yield" = oat_yield+pea_yield)
+
+
+
+colnames(Cornell_WinterOatPeaIntercrop_2024_Ithaca)
+
+colnames(Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta)
+
+
+df <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
+  select("observationUnitName","observationUnitDbId","observationLevel","Above ground dry biomass - g|day 136|COMP:0000063",
+         "Pea above ground dry biomass - g|day 136|COMP:0000060",
+         "Weed above ground dry biomass - g|day 136|COMP:0000065",
+         "Above ground dry biomass - g|day 168|COMP:0000064",
+         "Pea above ground dry biomass - g|day 168|COMP:0000061",
+         "Weed above ground dry biomass - g|day 168|COMP:0000066",
+         'Grain yield - g/m2|CO_350:0000260',
+         'Pea grain yield - g/m2|COMP:0000049',
+         "replicate",
+         plotNumber,
+         germplasmName,
+         `Lodging severity - 0-9 Rating|CO_350:0005007`,
+         `Freeze damage severity - 0-9 Rating|CO_350:0005001`,
+         `Winter survival - percent|CO_350:0000170`
+         ) %>% 
+  filter(!is.na(`Above ground dry biomass - g|day 136|COMP:0000063` )) %>% 
+  mutate("plot_name" = if_else(observationLevel == "subplot",str_sub(observationUnitName,end = -11), observationUnitName)) %>% 
+  left_join(Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta,join_by(plot_name) ) %>% 
+  rowwise() %>% 
+  mutate(pea_yield = if_else(inter_crop == "pea",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Pea grain yield - g/m2|COMP:0000049` )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "oat",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Grain yield - g/m2|CO_350:0000260` )) %>% 
+  mutate(pea_yield = if_else(inter_crop == "oat", 0 , pea_yield )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "pea", 0 , oat_yield )) %>% 
+  select(observationLevel,observationUnitDbId,inter_crop ,source,
+         replicate,plotNumber,germplasmName, inter_crop,
+         oat_yield,
+         pea_yield,
+         `Lodging severity - 0-9 Rating|CO_350:0005007`,
+         `Freeze damage severity - 0-9 Rating|CO_350:0005001`,
+         `Winter survival - percent|CO_350:0000170`,
+         "Pea above ground dry biomass - g|day 136|COMP:0000060",
+         "Weed above ground dry biomass - g|day 136|COMP:0000065",
+         "Above ground dry biomass - g|day 168|COMP:0000064",) %>% 
+  filter(source != "Barley") %>% 
+  filter(source != "Martens") %>% 
+  mutate("total_yield" = oat_yield+pea_yield)
+
+
+
+
+
 
