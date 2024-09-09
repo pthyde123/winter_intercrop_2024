@@ -34,7 +34,6 @@ plot_trial <- OatTraitBLUPs %>%
   print( n = nrow(OatTraitBLUPs))
 
 
-
 colnames(Cornell_WinterOatFounders_2024_Headrow_phenotypes)
 
 headrow_trial <- Cornell_WinterOatFounders_2024_Headrow_phenotypes %>% 
