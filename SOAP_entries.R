@@ -18,6 +18,10 @@ SOAP %>%
   print(n=26)
 
 
-
+SOAP %>% 
+  group_by(Name) %>% 
+  filter(n()>1) %>% 
+  distinct(Entry) %>% 
+  write.table( "clipboard", sep="\t", row.names=FALSE, col.names=TRUE)
 
 
