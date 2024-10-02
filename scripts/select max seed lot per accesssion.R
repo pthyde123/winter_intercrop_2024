@@ -22,3 +22,8 @@ Cornell_WinterOatPeaIntercrop_2024_Ithaca %>%
     write.csv('output/winter_2024_accession_max_seedlots.csv')
   
   
+
+
+
+
+
