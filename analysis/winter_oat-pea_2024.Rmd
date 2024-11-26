@@ -1,0 +1,217 @@
+---
+title: "Winter Oat-Pea 2024"
+author: "pthyde123"
+date: "2023-11-29"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+
+<br>
+
+## Packages
+```{r,  echo=TRUE}
+library(RColorBrewer)
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(ggrepel)
+library(readr)
+
+```
+
+## Import
+```{r,  echo=FALSE}
+
+Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
+
+Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta <- read_excel("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta.xlsx")
+
+
+```
+
+## Clean up and join with meta
+```{r,  echo=FALSE}
+plot_data <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
+  mutate("plot_name" = if_else(observationLevel == "subplot",str_sub(observationUnitName,end = -11), observationUnitName)) %>% 
+  left_join(Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta,join_by(plot_name) ) %>% 
+  rowwise() %>% 
+  mutate(pea_yield = if_else(inter_crop == "pea",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Pea grain yield - g/m2|COMP:0000049` )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "oat",
+                             sum(`Grain yield - g/m2|CO_350:0000260`,`Pea grain yield - g/m2|COMP:0000049`,na.rm=TRUE),`Grain yield - g/m2|CO_350:0000260` )) %>% 
+  mutate(pea_yield = if_else(inter_crop == "oat", 0 , pea_yield )) %>% 
+  mutate(oat_yield = if_else(inter_crop == "pea", 0 , oat_yield )) %>% 
+  select(observationLevel,observationUnitDbId,inter_crop ,source,
+         replicate,plotNumber,germplasmName, inter_crop,
+         oat_yield,
+         pea_yield,
+         `Lodging severity - 0-9 Rating|CO_350:0005007`,
+         `Freeze damage severity - 0-9 Rating|CO_350:0005001`,
+         `Winter survival - percent|CO_350:0000170`) %>% 
+  filter(observationLevel == "plot") %>% 
+  filter(source != "Barley") %>% 
+  filter(source != "Martens") %>% 
+  mutate("total_yield" = oat_yield+pea_yield)
+
+
+```
+
+
+
+## Data file
+```{r,  echo=FALSE}
+plot_data %>% 
+  kable(align = "c") %>% 
+  kable_classic(full_width=F,position = "left")%>% 
+ scroll_box(width = "900px", height = "300px")
+```
+
+## Yield Summary
+
+```{r,  echo=FALSE}
+
+plot_data %>% 
+    ggplot(aes(inter_crop,total_yield))+
+      geom_boxplot() +
+      geom_jitter(aes(inter_crop,total_yield,color=source),width = 0.25,size=4)+
+      xlab("")+
+      ylab("Total Grain g")+
+      scale_color_brewer(palette="Paired")+
+      theme_classic()+
+      theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+      theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+      theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+      theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+```
+
+
+
+
+```{r,  echo=FALSE}
+
+
+plot_data %>% 
+  ggplot(aes(inter_crop,oat_yield))+
+  geom_boxplot() +
+  geom_jitter(aes(inter_crop,oat_yield,color=source),width = 0.25,size=4)+
+  xlab("")+
+  ylab("Oat Yield g")+
+  scale_color_brewer(palette="Paired")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+```
+
+```{r,  echo=FALSE}
+
+
+plot_data %>% 
+  ggplot(aes(inter_crop,pea_yield))+
+  geom_boxplot() +
+  geom_jitter(aes(inter_crop,pea_yield,color=source),width = 0.25,size=4)+
+  xlab("")+
+  ylab("Pea Yield g")+
+  scale_color_brewer(palette="Paired")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+```
+
+
+
+
+```{r,  echo=FALSE}
+
+
+plot_data %>% 
+  select(inter_crop,plotNumber, oat_yield, pea_yield) %>% 
+  pivot_longer(oat_yield:pea_yield, names_to = "Crop", values_to = "grams") %>% 
+  filter(grams != 0) %>% 
+    ggplot(aes(inter_crop,grams))+
+      geom_boxplot() +
+      geom_jitter(aes(inter_crop,grams,color=Crop),width = 0.25,size=4)+
+      xlab("")+
+      ylab("Grams")+
+      scale_color_brewer(palette="Paired")+
+      theme_classic()+
+      theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+      theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+      theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+      theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+
+
+```
+
+
+
+
+### Freeze Damage Summary
+
+```{r,  echo=FALSE}
+
+plot_data %>%
+  filter(source != "Pea") %>% 
+  ggplot(aes(inter_crop,`Freeze damage severity - 0-9 Rating|CO_350:0005001`))+
+  geom_boxplot() +
+  geom_jitter(aes(inter_crop,`Freeze damage severity - 0-9 Rating|CO_350:0005001`,color=source),width = 0.25,size=4)+
+  xlab("")+
+  ylab("Freeze Damage")+
+  scale_color_brewer(palette="Paired")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))+
+  facet_wrap(~source)
+
+
+
+
+```
+
+
+### Lodging Summary
+
+```{r,  echo=FALSE}
+
+plot_data %>%
+  ggplot(aes(inter_crop,`Lodging severity - 0-9 Rating|CO_350:0005007`))+
+  geom_boxplot() +
+  geom_jitter(aes(inter_crop,`Lodging severity - 0-9 Rating|CO_350:0005007`,color=source),width = 0.25,size=4)+
+  xlab("")+
+  ylab("Lodging")+
+  scale_color_brewer(palette="Paired")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))+
+  facet_wrap(~source)
+
+
+
+```
