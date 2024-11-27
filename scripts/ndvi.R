@@ -4,7 +4,7 @@
 
 library(readxl)
 library(readr)
-
+library(tidyverse)
 
 
 
@@ -55,7 +55,7 @@ ndvi <- ndvi %>%
 
 
 ######
-library(tidyverse)
+
 
 library(readr)
 Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
@@ -143,6 +143,173 @@ plot_data %>%
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
   theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+#### linear modeling
+
+library(MuMIn)
+
+
+
+model_data <- plot_data %>% 
+  select(plotNumber,germplasmName,replicate,inter_crop,oat_yield,pea_yield,total_yield) %>% 
+  left_join(ndvi_s2, by=join_by(plotNumber == plot_number)) %>% 
+  mutate(cNDVI = rowSums(across(`NDVI_10-17-23_mean`:`NDVI_07-08-24_mean`)))
+
+
+model_data <- model_data %>% 
+  select(germplasmName,replicate,inter_crop,total_yield,`NDVI_10-17-23_mean`:cNDVI) %>% 
+  rename(block = replicate) %>% 
+  filter(inter_crop == "oat-pea")
+
+
+
+
+yield <- lme4::lmer(total_yield ~ (1|germplasmName) + (1|block),
+           data = model_data)
+
+
+df_trait <- as.data.frame(VarCorr(yield))
+vg_trait <- df_trait[df_trait$grp == "germplasmName","vcov"]
+ve_trait <- df_trait[df_trait$grp == "Residual", "vcov"]
+h2_trait <- vg_trait/(vg_trait + ve_trait/(2))
+
+h2_yield <- h2_trait
+
+h2_yield
+
+
+
+
+
+
+
+
+ndvi <- lme4::lmer(`NDVI_06-14-24_mean` ~ (1|germplasmName) + (1|block),
+                    data = model_data)
+
+df_trait <- as.data.frame(VarCorr(ndvi))
+vg_trait <- df_trait[df_trait$grp == "germplasmName","vcov"]
+ve_trait <- df_trait[df_trait$grp == "Residual", "vcov"]
+
+h2_trait <- vg_trait/(vg_trait + ve_trait/(2))
+
+h2_ndvi <- h2_trait
+
+h2_ndvi
+
+
+
+
+
+
+GC_yield <- ranef(yield)$germplasmName
+
+GC_ndvi <- ranef(ndvi)$germplasmName
+
+
+
+GC_yield <- GC_yield %>%
+  rownames_to_column(var = "germplasmName")%>% 
+  rename(GC_yield = "(Intercept)")
+
+
+GC_ndvi <- GC_ndvi %>% 
+  rownames_to_column(var = "germplasmName")%>% 
+  rename(GC_ndvi = "(Intercept)")
+
+ 
+
+
+model_data %>% 
+  select(germplasmName,`NDVI_06-14-24_mean`) %>% 
+  group_by(germplasmName) %>% 
+  summarise(mean_ndvi = mean(`NDVI_06-14-24_mean`)) %>% 
+  left_join(GC_yield) %>% 
+    ggplot(aes(mean_ndvi,GC_yield))+
+    geom_point() +
+    geom_smooth(se = FALSE, method = lm)+
+    xlab("NDVI_06-14-24")+
+    ylab("GC Yield")+
+    scale_color_brewer(palette="Dark2")+
+    theme_classic()+
+    theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+    theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+    theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+  
+
+
+model_data %>% 
+  select(germplasmName,`total_yield`) %>% 
+  group_by(germplasmName) %>% 
+  summarise(mean_yield = mean(`total_yield`)) %>% 
+  left_join(GC_yield) %>% 
+  ggplot(aes(mean_yield,GC_yield))+
+  geom_point() +
+  geom_smooth(se = FALSE, method = lm)+
+  xlab("Total Yield")+
+  ylab("GC Yield")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+ 
+
+model_data %>% 
+  select(germplasmName,`cNDVI`) %>% 
+  group_by(germplasmName) %>% 
+  summarise(mean_cNDVI = mean(cNDVI)) %>% 
+  left_join(GC_yield) %>% 
+  ggplot(aes(mean_cNDVI,GC_yield))+
+  geom_point() +
+  geom_smooth(se = FALSE, method = lm)+
+  xlab("cNDVI")+
+  ylab("GC Yield")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+
+
+
+
+geno_yield %>% 
+  left_join(geno_ndvi) %>%
+  ggplot(aes(ndvi,yield))+
+  geom_point() +
+  geom_smooth(se = FALSE, method = lm)+
+  xlab("NDVI_06-14-24")+
+  ylab("Total Grain g")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+  
+
+
+
+
+
+
+
+
+r.squaredGLMM(yield)
+
+
+
+
 
 
 
@@ -295,7 +462,7 @@ df %>%
   mutate(dap = as.numeric(dap)) %>% 
   ggplot(aes(dap,ndvi,color=inter_crop))+
   geom_jitter() +
-  geom_smooth(se = TRUE, method = loess)+
+  geom_smooth(se = TRUE, method = loess,span=.1)+
   xlab("DAP")+
   ylab("NDVI")+
   scale_color_brewer(palette="Dark2")+
@@ -351,8 +518,19 @@ df %>%
   mutate(winter_change = `180` - `43`) %>% 
   filter(inter_crop == "oat") %>% 
   ggplot(aes(germplasmName,winter_change))+
-  geom_boxplot()
-  
+  geom_boxplot()+
+  xlab("Accession")+
+  ylab("NDVI Winter Change")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text( color = "black", size = 12))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+ 
+
+
+ 
   
 df %>%   
     left_join(plot_data, by = "plotNumber") %>% 
@@ -361,7 +539,14 @@ df %>%
   mutate(freeze_damage = `Freeze damage severity - 0-9 Rating|CO_350:0005001`) %>% 
   ggplot(aes(`Freeze damage severity - 0-9 Rating|CO_350:0005001`, winter_change))+
     geom_point()+
-  geom_smooth()
+  geom_smooth()+
+  ylab("NDVI Winter Change")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text( color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 
 
 
