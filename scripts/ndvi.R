@@ -147,7 +147,7 @@ plot_data %>%
 
 #### linear modeling
 
-library(MuMIn)
+
 
 
 

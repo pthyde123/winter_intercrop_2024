@@ -18,7 +18,12 @@ library(readxl)
 library(readr)
 library(tidyverse)
 library(lme4)
+library(here)
 ```
+
+
+
+
 
 <br>
 <br>
@@ -60,7 +65,22 @@ Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta
 <br>
 <br>
 
+###  NDVI calculations
 
+
+
+
+
+```{r , echo=FALSE, error=FALSE, fig.cap="subplot", out.width = '50%'}
+
+
+knitr::include_graphics("./images/subplot_bounday.png")
+
+
+
+```
+
+![image](./subplot_bounday.png)
 
 ###  Format the NDVI Data
 
@@ -267,6 +287,36 @@ plot_data %>%
 <br>
 
 
+
+
+```{r}
+plot_data %>% 
+  select(plotNumber,germplasmName,replicate,inter_crop,oat_yield,pea_yield,total_yield) %>% 
+  left_join(ndvi_s2, by=join_by(plotNumber == plot_number)) %>% 
+  mutate(cNDVI = rowSums(across(`NDVI_10-17-23_mean`:`NDVI_07-08-24_mean`))) %>% 
+  
+  ggplot(aes(`NDVI_11-16-23_mean`,total_yield,color=inter_crop))+
+  geom_point() +
+  geom_smooth(se = FALSE, method = lm)+
+  xlab("NDVI_06-14-24")+
+  ylab("Total Grain g")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+```
+
+
+
+
+
+
 ###  Oat Genetic Components of Total Yield  (GC Yield)
 Set up the data
 ```{r}
@@ -397,7 +447,7 @@ time_series_plot_data %>%
   filter(dap == 43| dap == 180) %>% 
   ggplot(aes(dap,ndvi,color=inter_crop))+
   geom_point() +
-  geom_smooth(se = TRUE, method = lm)+
+  geom_line(se = TRUE, method = lm)+
   xlab("DAP")+
   ylab("NDVI")+
   scale_color_brewer(palette="Dark2")+
@@ -407,6 +457,27 @@ time_series_plot_data %>%
   theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 ```
+
+
+```{r}
+
+
+time_series_plot_data %>% 
+  filter(inter_crop == "oat-pea") %>%
+  group_by(germplasmName) %>% 
+  summarize(`43` = mean(`43`), `180` = mean(`180`) ) %>% 
+  pivot_longer(`43`:`180`, names_to = "dap", values_to = "ndvi" ) %>% 
+  mutate(dap = as.numeric(dap)) %>% 
+    ggplot(aes(dap,ndvi)) +
+    geom_line()
+
+
+
+```
+
+
+
+
 
 ```{r}
 
