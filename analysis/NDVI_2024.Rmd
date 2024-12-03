@@ -3,35 +3,40 @@ title: "Winter_2025_NDVI"
 author: "Peter Hyde"
 date: "2024-11-26"
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,message = FALSE)
+
+
+
 ```
 
-<br>
-<br>
+<br> <br>
 
-###  Library
+### Library
+
 ```{r}
 library(readxl)
 library(readr)
 library(tidyverse)
 library(lme4)
-library(here)
+library(kableExtra)
+
 ```
 
+<br> <br>
 
+### Import NDVI data generated in QGIS
 
-
-
-<br>
-<br>
-
-###  Import NDVI data generated in QGIS
-The NDVI data files are exported from QGIS with a NDVI value for each supbplot.
-The prow, pcol, grow, and gcol are identifiers from the `plot boundary` and `plot grid` plugin.
-The *plot_number_to_plot_boundary* files is used to link the plot id's of the NDVI files with the plot id's of the T3/oat data file. 
+The NDVI data files are exported from QGIS with a NDVI value for each
+supbplot. The prow, pcol, grow, and gcol are identifiers from the
+`plot boundary` and `plot grid` plugin. The
+*plot_number_to_plot_boundary* files is used to link the plot id's of
+the NDVI files with the plot id's of the T3/oat data file.
 
 ```{r}
 NDVI_10_17_23 <- read_excel("data/NDVI_10-17-23.xlsx")
@@ -44,48 +49,55 @@ NDVI_07_08_24 <- read_excel("data/NDVI_07-08-24.xlsx")
 
 plot_number_to_plot_boundary <- read_csv("output/plot_number_to_plot_boundary.csv")
 ```
+
 <br>
 
-###  Import phenotype data
-*Cornell_WinterOatPeaIntercrop_2024_Ithaca* is the trial name and phenotype data downloaded from T3/Oat with no changes made. 
-*Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta* contains plot meta data not available on T3/Oat. Along with T3/Oat unique plot id's for merging.  It is mostly used for inter-crop designations. 
+### Import phenotype data
+
+*Cornell_WinterOatPeaIntercrop_2024_Ithaca* is the trial name and
+phenotype data downloaded from T3/Oat with no changes made.
+*Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta* contains plot meta
+data not available on T3/Oat. Along with T3/Oat unique plot id's for
+merging. It is mostly used for inter-crop designations.
 
 ```{r}
 Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
 
 Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta <- read_excel("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta.xlsx")
 ```
+
 ```{r,echo=FALSE}
 Cornell_WinterOatPeaIntercrop_2024_Ithaca
-
-Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta
 ```
 
 
-<br>
-<br>
-
-###  NDVI calculations
-
-
-
-
-
-```{r , echo=FALSE, error=FALSE, fig.cap="subplot", out.width = '50%'}
-
-
-knitr::include_graphics("./images/subplot_bounday.png")
-
-
-
+```{r,echo=FALSE}
+Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta  %>% 
+  kable(align = "c") %>% 
+  kable_classic(full_width=F,position = "left")%>% 
+  scroll_box(width = "900px", height = "300px")
 ```
 
-![image](./subplot_bounday.png)
+<br> <br>
 
-###  Format the NDVI Data
+### NDVI calculations
 
-The NDVI data for each date is combined and the T3/oat plot number is assigned.
-Some guard plots and filler plots have values calculated in QGIS there plots are identified as 900's and will be removed. 
+<br> The orange rectangle is the plot boundary. The plot is divided into
+3 subplots. Mean NDVI was calculated for each subplot in QGIS. For
+analysis the middle subplot (subplot 2) was used because it was never
+biomass harvested and represents the portion of the plot that was
+harvested for grain yield. The subplot delineation was buffered in 10cm
+on either side. This allows for a more automated workflow by alleviating
+then need to shift each plot boundary.
+
+![](./subplot_bounday.png) <br>
+
+### Format the NDVI Data
+
+The NDVI data for each date is combined and the T3/oat plot number is
+assigned. Some guard plots and filler plots have values calculated in
+QGIS there plots are identified as 900's and will be removed.
+
 ```{r}
 ndvi <- bind_cols(
 
@@ -109,22 +121,32 @@ ndvi <- ndvi %>%
   relocate(plot_number,subplot,pg_id)
 
 ```
+
 ```{r,echo=FALSE}
 
-ndvi
+ndvi%>% 
+  kable(align = "c") %>% 
+  kable_classic(full_width=F,position = "left")%>% 
+  scroll_box(width = "900px", height = "300px")
 
 ```
 
-<br>
-<br>
+<br> <br>
 
-###  Format and calculations of phenotype data. 
+### Format and calculations of phenotype data.
+
 Set up of the T3/oat data file for use in this analysis.
-1. join with meta data
-2. calculate total yield
-3. select desired columns
-4. filter out sub-plot data
-5. filter out other unwanted plots
+
+1.  join with meta data
+
+2.  calculate total yield
+
+3.  select desired columns
+
+4.  filter out sub-plot data
+
+5.  filter out other unwanted plots
+
 ```{r}
 
 plot_data <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
@@ -156,15 +178,13 @@ plot_data <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>%
 plot_data
 ```
 
-<br>
-<br>
-
-
+<br> <br>
 
 ### Join the NDVI and T3/Oat data
-1. filter and keep only sublot 2, the middle subplot
-2. join the NDVI data with T3/data
-3. calculate cumulative NDVI **cNDVI**
+
+1.  filter and keep only sublot 2, the middle subplot
+2.  join the NDVI data with T3/data
+3.  calculate cumulative NDVI **cNDVI**
 
 ```{r}
 ndvi_s2 <- ndvi %>% 
@@ -177,8 +197,6 @@ cNDVI_plot_data <- plot_data %>%
   
 cNDVI_plot_data
 ```
-
-
 
 ```{r}
 cNDVI_plot_data %>% 
@@ -197,16 +215,9 @@ cNDVI_plot_data %>%
 
 ```
 
+<br> <br>
 
-<br>
-<br>
-
-
-
-
-
-
-###  NDVI Time Series 
+### NDVI Time Series
 
 ```{r}
 
@@ -230,9 +241,6 @@ colnames(time_series_plot_data) <- dap_names
 
 ```
 
-
-
-
 ```{r}
 
 time_series_plot_data %>% 
@@ -255,15 +263,17 @@ time_series_plot_data %>%
 ```
 
 <br>
-<br>
+Notes:
+  The peas start out slow and catch up.
+  NDVI at the last time point is very similar to the first.  Indicating complete senescence.
+  In the field it was clear that peas matured a week or two after the oats.  It is important to breed for better maturity timing and this might be useful to help make the selection. 
+  This graph is way to over smoothed but is the decrease in NDVI over the winter indicative of winter survival.
 
 
 
+<br> <br>
 
-
-
-###  NDVI at peak timepoint
-
+### NDVI at peak timepoint
 
 ```{r}
 plot_data %>% 
@@ -284,10 +294,12 @@ plot_data %>%
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 ```
 <br>
-<br>
-
-
-
+Notes:
+  *Total Grain g* is the sum of the oat and pea grain harvested.  
+  6-14-24 is the peak NDVI time point and appears to have to most correlation to yield.
+  
+  
+<br> <br>
 
 ```{r}
 plot_data %>% 
@@ -298,7 +310,7 @@ plot_data %>%
   ggplot(aes(`NDVI_11-16-23_mean`,total_yield,color=inter_crop))+
   geom_point() +
   geom_smooth(se = FALSE, method = lm)+
-  xlab("NDVI_06-14-24")+
+  xlab("NDVI_11-16-23_mean")+
   ylab("Total Grain g")+
   scale_color_brewer(palette="Dark2")+
   theme_classic()+
@@ -311,14 +323,21 @@ plot_data %>%
 
 
 ```
+<br>
+Notes:
+  11-16-23 is the pre winter time point and does not seem to be correlated to yield. 
 
 
 
+<br>
 
 
 
-###  Oat Genetic Components of Total Yield  (GC Yield)
+### Oat Genetic Components of Total Yield (GC Yield)
+
 Set up the data
+The following only uses inter-crop data. 
+
 ```{r}
 
 model_data <- plot_data %>% 
@@ -332,14 +351,17 @@ model_data <- model_data %>%
   rename(block = replicate) %>% 
   filter(inter_crop == "oat-pea") # select only oat-pea yields
 
+```
 
 
-
-model_data
-
-
+```{r, echo=FALSE}
+model_data%>% 
+  kable(align = "c") %>% 
+  kable_classic(full_width=F,position = "left")%>% 
+  scroll_box(width = "900px", height = "300px")
 
 ```
+
 <br>
 
 Total Yield (oat + pea)
@@ -360,9 +382,15 @@ h2_yield <- h2_trait
 h2_yield
 
 ```
+
+
+The heritability of yield
+
+
 <br>
 
 NDVI
+
 ```{r}
 
 ndvi <- lme4::lmer(`NDVI_06-14-24_mean` ~ (1|germplasmName) + (1|block),
@@ -379,11 +407,15 @@ h2_ndvi <- h2_trait
 h2_ndvi
 
 ```
+
+The heritability of NDVI
+
+
+
 <br>
 
-
-
 Combine GC yield and GC NDVI
+
 ```{r}
 GC_yield <- ranef(yield)$germplasmName
 
@@ -401,7 +433,6 @@ GC_ndvi <- GC_ndvi %>%
 ```
 
 <br>
-
 
 ```{r}
 
@@ -423,22 +454,44 @@ model_data %>%
     theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
     theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 
-
-
-
-
-
-
-
-
 ```
 
 
 
+```{r}
+
+
+model_data %>% 
+  select(germplasmName,`cNDVI`) %>% 
+  group_by(germplasmName) %>% 
+  summarise(mean_ndvi = mean(`cNDVI`)) %>% 
+  left_join(GC_yield) %>% 
+    ggplot(aes(mean_ndvi,GC_yield))+
+    geom_point() +
+    geom_smooth(se = FALSE, method = lm)+
+    xlab("cNDVI")+
+    ylab("GC Yield")+
+    scale_color_brewer(palette="Dark2")+
+    theme_classic()+
+    theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+    theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+    theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+```
+<br>
+Notes:
+*cNDVI* is the NDVI integral or area under the curve. 
 
 
 
-###  NDVI winter change
+
+<br>
+<br>
+
+
+
+### NDVI winter change
 
 ```{r}
 time_series_plot_data %>% 
@@ -446,8 +499,8 @@ time_series_plot_data %>%
   mutate(dap = as.numeric(dap)) %>% 
   filter(dap == 43| dap == 180) %>% 
   ggplot(aes(dap,ndvi,color=inter_crop))+
-  geom_point() +
-  geom_line(se = TRUE, method = lm)+
+  geom_jitter(width = 10) +
+  geom_smooth(se = TRUE, method = lm)+
   xlab("DAP")+
   ylab("NDVI")+
   scale_color_brewer(palette="Dark2")+
@@ -457,33 +510,19 @@ time_series_plot_data %>%
   theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 ```
+<br>
+Notes:
+  This graph represents the drop in NDVI over the winter. 
 
 
-```{r}
-
-
-time_series_plot_data %>% 
-  filter(inter_crop == "oat-pea") %>%
-  group_by(germplasmName) %>% 
-  summarize(`43` = mean(`43`), `180` = mean(`180`) ) %>% 
-  pivot_longer(`43`:`180`, names_to = "dap", values_to = "ndvi" ) %>% 
-  mutate(dap = as.numeric(dap)) %>% 
-    ggplot(aes(dap,ndvi)) +
-    geom_line()
-
-
-
-```
-
-
-
+<br>
 
 
 ```{r}
 
 time_series_plot_data %>% 
   mutate(winter_change = `180` - `43`) %>% 
-  filter(inter_crop == "oat") %>% 
+  filter(inter_crop == "oat-pea") %>% 
   ggplot(aes(germplasmName,winter_change))+
   geom_boxplot()+
   xlab("Accession")+
@@ -492,13 +531,16 @@ time_series_plot_data %>%
   theme_classic()+
   theme(axis.text.x=element_text(angle = 90, hjust = 1))+
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
-  theme(axis.text.x = element_text( color = "black", size = 12))+
+  theme(axis.text.x = element_text( color = "black", size = 8))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
 
 
-
-
 ```
+<br>
+Notes:
+  There is variation in NDVI winter change due to Accession.
+
+<br>
 
 
 ```{r, warning=FALSE}
@@ -525,15 +567,8 @@ time_series_plot_data %>%
 ```
 
 
-
-
-
-
+<br>
 ```{r}
-
-###### heritability  
-
-
 
 rep_geno_2 <- time_series_plot_data %>%   
   left_join(plot_data, by = "plotNumber") %>% 
@@ -557,12 +592,7 @@ h2_data
 
 
 
-
-
-
 ```
-
-
 
 ```{r}
 
@@ -595,16 +625,14 @@ h2_trait <- vg_trait/(vg_trait + ve_trait/(2))
 h2_freeze_damage <- h2_trait
 
 
-
-
-
-
-
 ```
+
 ```{r}
 h2_ndvi_winter_change
 h2_freeze_damage
 
 ```
+The heritabiliy of the *freeze damage rating* is greater than the *NDVI winter change*
 
-
+<br>
+<br>
