@@ -1,5 +1,5 @@
 ---
-title: "Winter_2025_NDVI"
+title: "Winter 2024 NDVI"
 author: "Peter Hyde"
 date: "2024-11-26"
 output: html_document
@@ -538,7 +538,7 @@ time_series_plot_data %>%
 ```
 <br>
 Notes:
-  There is variation in NDVI winter change due to Accession.
+  Trying to show that there is variation in NDVI winter change due to Accession.
 
 <br>
 
@@ -565,9 +565,13 @@ time_series_plot_data %>%
 
 
 ```
-
+Notes:  Trying to look at the correlation between NDVI winter change and Freeze damage.  Should probably shift to values this graph isn't that useful. 
 
 <br>
+
+
+###  Heritability of NDVI change and Winter Damage ratings
+
 ```{r}
 
 rep_geno_2 <- time_series_plot_data %>%   
@@ -588,11 +592,23 @@ h2_data <- time_series_plot_data %>%
   rename(germplasmName = germplasmName.x) %>% 
   rename(block = replicate.x)
 
-h2_data
+```
 
+The dataframe
+```{r, echo=FALSE}
+
+h2_data %>% 
+  kable(align = "c") %>% 
+  kable_classic(full_width=F,position = "left")%>% 
+  scroll_box(width = "900px", height = "300px")
 
 
 ```
+
+
+
+
+
 
 ```{r}
 
@@ -609,12 +625,9 @@ h2_ndvi_winter_change  <- h2_trait
 
 
 
-h2_data
-
 
 lm_trait <- lme4::lmer(freeze ~ (1|germplasmName) + (1|block),
                        data = h2_data)
-
 
 df_trait <- as.data.frame(VarCorr(lm_trait))
 vg_trait <- df_trait[df_trait$grp == "germplasmName","vcov"]
@@ -628,6 +641,7 @@ h2_freeze_damage <- h2_trait
 ```
 
 ```{r}
+
 h2_ndvi_winter_change
 h2_freeze_damage
 
