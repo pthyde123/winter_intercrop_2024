@@ -4,8 +4,10 @@ library(readr)
 Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
 
 colnames(Cornell_WinterOatPeaIntercrop_2024_Ithaca)
-
+library(readxl)
 library(readr)
+
+
 plot_number_to_plot_boundary <- read_csv("output/plot_number_to_plot_boundary.csv")
 
 Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta <- read_excel("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta.xlsx")
