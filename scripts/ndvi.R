@@ -22,20 +22,25 @@ plot_number_to_plot_boundary <- read_csv("output/plot_number_to_plot_boundary.cs
 
 
 
-
-
-
 ndvi <- bind_cols(
 
-NDVI_10_17_23[,1:4],
+NDVI_10_17_23[,1:4],  # column 1-4 are the plot boundary and plot grid designations
 
-NDVI_10_17_23[,7],
+NDVI_10_17_23[,7],    # column 7 is the NDVI mean for the subplot
 NDVI_11_16_23[,7],
 NDVI_04_01_24[,7],
 NDVI_04_20_24[,7],
 NDVI_05_12_24[,7],
 NDVI_06_14_24[,7],
-NDVI_07_08_24[,7]
+NDVI_07_08_24[,7],
+
+NDVI_10_17_23[,9],  # column 9 is the NDVI std for the subplot
+NDVI_11_16_23[,9],
+NDVI_04_01_24[,9],
+NDVI_04_20_24[,9],
+NDVI_05_12_24[,9],
+NDVI_06_14_24[,9],
+NDVI_07_08_24[,9]
 )
 
 
