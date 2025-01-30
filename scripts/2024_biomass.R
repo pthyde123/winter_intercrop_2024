@@ -267,7 +267,7 @@ subplot_data %>%
 
 
 #### RANDOM FOREST ####
-
+library(randomForest)
 
 subplot_data
 colnames(subplot_data)
@@ -299,6 +299,7 @@ RF_data <- subplot_data %>%
   rename(pea_height = "Pea plant height - cm|day 134|COMP:0000062") %>% 
   rename(NDVI = "NDVI_05-12-24_mean") %>% 
   select(oat_biomass,oat_height,`NDVI`,pea_biomass,pea_height) %>% 
+  mutate(total_biomass = oat_biomass+pea_biomass) %>% 
   filter(!is.na(oat_biomass))
 
 data <- as.data.frame(RF_data)
@@ -318,41 +319,51 @@ str(data)
 set.seed(99)
 
 
-####  data.imputed <- rfImpute(oat_biomass ~ ., data = data, iter=6)
 
-model <- randomForest(oat_biomass ~ ., data=data, proximity=TRUE)
-
+### second try at random forest using another tutorial
 
 
-lme4::lmer(oat_biomass ~ (1|oat_height + NDVI),
-           data = data)
+data <- as.data.frame(RF_data)
 
 
+data <-data %>% 
+  select(oat_biomass,pea_biomass,oat_height,pea_height,NDVI)
 
-model<-lm(oat_biomass ~ oat_height + pea_height + NDVI, data=data)
+str(data)
 
-
-summary(model)
-
-
-data %>% 
-  mutate(biomass_calc = oat_height * NDVI) %>% 
-  filter(oat_biomass != 0) %>% 
-  ggplot(aes(oat_biomass,biomass_calc))+
-  geom_point() +
-  geom_smooth(se = TRUE, method = lm)+
-  xlab("Oat Biomass")+
-  ylab("NDVI * height")+
-  scale_color_brewer(palette="Dark2")+
-  theme_classic()+
-  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
-  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
-  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
-  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+# Create features and target
+X <- data %>% 
+  select(oat_height,pea_height,NDVI)
+y <- data$oat_biomass
 
 
+library(caret)
+# Split data into training and test sets
+index <- createDataPartition(y, p=0.75, list=FALSE)
+X_train <- X[ index, ]
+X_test <- X[-index, ]
+y_train <- y[index]
+y_test<-y[-index]
 
+# Train the model 
+regr <- randomForest(x = X_train, y = y_train , maxnodes = 10, ntree = 10)
 
+predictions <- predict(regr, X_test)
+result <- X_test
+result['biomass'] <- y_test
+result['prediction']<-  predictions
+head(result)
+
+ggplot(  ) + 
+  geom_point( aes(x = X_test$NDVI, y = y_test, color = 'red', alpha = 0.5) ) + 
+  geom_point( aes(x = X_test$NDVI , y = predictions, color = 'blue',  alpha = 0.5)) + 
+  labs(x = "NDVI", y = "Biomass", color = "", alpha = 'Transperency') +
+  scale_color_manual(labels = c( "Predicted", "Real"), values = c("blue", "red")) 
+
+library(Metrics)
+print(paste0('MAE: ' , mae(y_test,predictions) ))
+print(paste0('MSE: ' ,caret::postResample(predictions , y_test)['RMSE']^2 ))
+print(paste0('R2: ' ,caret::postResample(predictions , y_test)['Rsquared'] ))
 
 
 
