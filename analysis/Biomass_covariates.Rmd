@@ -1,0 +1,175 @@
+---
+title: "Oat Biomass Prediction Covariance"
+author: "Peter Hyde"
+date: "2025-02-05"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE)
+```
+
+<br> <br>
+
+### Library
+
+```{r}
+
+library(readxl)
+library(readr)
+library(tidyverse)
+library(kableExtra)
+library(BGLR)
+
+```
+
+<br>
+
+### Data
+
+```{r}
+
+# T3 data file trial name "Cornell_WinterOatPeaIntercrop_2024_Ithaca"
+Cornell_WinterOatPeaIntercrop_2024_Ithaca <- read_csv("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca.csv")
+
+
+# plot meta data, not on T3
+Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta <- read_excel("data/Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta.xlsx")
+
+
+intercrop_pred_oat_biomass <- read_csv("output/intercrop_pred_oat_biomass.csv")
+  ##rename(inter_pred_oat_biomass = pred_oat_biomass)
+
+
+monocrop_pred_oat_biomass <- read_csv("output/monocrop_pred_oat_biomass.csv") 
+  ##rename(mono_pred_oat_biomass = pred_oat_biomass)
+
+  
+pred_biomass <- bind_rows(intercrop_pred_oat_biomass,monocrop_pred_oat_biomass)  
+  
+
+```
+<br>
+
+### Create full data set
+
+```{r}
+subplot_data <- Cornell_WinterOatPeaIntercrop_2024_Ithaca %>% 
+  
+  mutate(plot_name = gsub("\\_subplot_.*", "", observationUnitName)) %>% # get plot name without subplot number for joining
+  
+  filter(observationLevel == "subplot") %>% # keep only subplot level data, most of our data is subplot level
+  mutate(subplot_number = str_sub(observationUnitName,-1)) %>% # DANGER this only works if you filter to subplot first
+  
+  left_join(Cornell_WinterOatPeaIntercrop_2024_Ithaca_plot_meta, join_by(plot_name)) %>% # join T3 data with meta, need inter_crop designation, not found on T3 
+  
+  left_join(pred_biomass, join_by(observationUnitName)) %>% # join with biomass estimates  
+  
+  filter(germplasmName != "Winter Hayden") # remove winter hayden, it was not planted, plots are pea only
+
+```
+
+
+
+### The full data set
+
+```{r}
+
+colnames(subplot_data)
+```
+
+
+```{r}
+
+model_data <- subplot_data %>%
+  filter(inter_crop %in% c("oat","oat-pea")) %>% # keep only oat and oat-pea accessions, remove barley
+  
+  filter(subplot_number == "2") %>% 
+  
+  select(plot_name,observationLevel,subplot_number, "observationUnitName" ,"germplasmName",
+         "plotNumber",observationLevel,blockNumber,inter_crop,pair,pred_oat_biomass)
+         
+colnames(model_data)
+```
+
+```{r}
+
+biomass_data <- model_data %>% 
+  select(germplasmName,pair,blockNumber,inter_crop,pred_oat_biomass) %>% 
+  filter(inter_crop == "oat") %>% 
+  rename(mono_pred_oat_biomass = pred_oat_biomass) %>% 
+    
+    left_join(
+      model_data %>% 
+      select(pair,inter_crop,pred_oat_biomass) %>% 
+      filter(inter_crop == "oat-pea") %>% 
+      rename(inter_pred_oat_biomass = pred_oat_biomass), join_by(pair)) %>% 
+
+      mutate(blockNumber =as.factor(blockNumber)) %>% 
+      mutate(germplasmName =as.factor(germplasmName)) 
+    
+
+```
+
+```{r}
+
+yTraits <- as.matrix(dplyr::select(biomass_data, contains("biomass")))
+incBlocks <- model.matrix(~ -1 + blockNumber, biomass_data)
+incOatAcc <- model.matrix(~ -1 + germplasmName, biomass_data)
+
+
+
+ETA <- list(list(X=incBlocks, model="BRR"),
+            list(X=incOatAcc, model="BRR"))
+
+library(car)
+qqPlot(yTraits[,1])
+
+```
+
+
+
+
+```{r}
+
+tst2 <- BGLR::Multitrait(yTraits, ETA, intercept=TRUE,
+                  resCov=list(df0=4,S0=NULL,type="UN"),
+                  R2=0.5,
+                  nIter=1000, burnIn=200,
+                  thin=10, saveAt="",verbose=FALSE)
+
+```
+
+
+
+
+
+```{r}
+oatEff <- tst2$ETA[[2]]$beta
+
+oatEffSD <- tst2$ETA[[2]]$SD.beta
+
+fitOE <- lm(oatEff[,1] ~ oatEff[,2])
+
+oatEffCov <- tst2$ETA[[2]]$Cov$Omega
+
+plot(oatEff, xlab="Oat genotype on mono biomass", ylab="Oat genotype on inter biomass",
+     cex.lab=1.3, cex.axis=1.3, pch=16)
+
+summary(fitOE)
+anova(fitOE) 
+
+cov2cor(oatEffCov)
+
+
+```
+
+
+
+
+
+
+
