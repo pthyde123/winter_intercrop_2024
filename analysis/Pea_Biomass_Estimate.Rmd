@@ -1,5 +1,5 @@
 ---
-title: "Oat-Pea Biomass Estimation, Random Forest"
+title: "Oat-Pea Pea Biomass Estimation, Random Forest"
 author: "Peter Hyde"
 date: "2025-02-05"
 output: html_document
@@ -335,4 +335,29 @@ h2_trait <- vg_trait/(vg_trait + ve_trait/(2))
 h2_trait
 ```
 
+#### output file 
+```{r}
 
+# use prediction model to estimate all subplot 2 biomass
+# keep genotypes with only 1 rep
+# output file for further analysis
+
+
+output_data <- full_data %>% 
+  filter(subplot == 2) %>% # only make estimates using subplot 2
+  select(observationUnitName,inter_crop,oat_height,pea_height,contains("mean")) %>% 
+  filter(inter_crop == "oat-pea") # this model is only for oat-pea plots
+
+
+pred_output <- predict(final_wf, output_data[,-1] ) # removed observationUnitName it isn't part of the model
+
+
+pea_biomass_predictions <- bind_cols(output_data,pred_output) %>% 
+  select(observationUnitName,.pred) %>% 
+  dplyr::rename(pred_pea_biomass = .pred)
+
+
+write.csv(pea_biomass_predictions,"output/intercrop_pred_pea_biomass.csv",row.names=FALSE)
+
+
+```

@@ -131,6 +131,9 @@ training_data  %>%
   kable(align = "c") %>% 
   kable_classic(full_width=F,position = "left")%>% 
   scroll_box(width = "900px", height = "300px")
+
+write.table(training_data, "clipboard", sep="\t", row.names=FALSE)
+
 ```
 
 <br>

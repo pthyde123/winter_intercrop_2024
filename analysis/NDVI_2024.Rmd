@@ -245,10 +245,11 @@ colnames(time_series_plot_data) <- dap_names
 
 time_series_plot_data %>% 
   pivot_longer(`13`:`278`, names_to = "dap", values_to = "ndvi" ) %>% 
-  mutate(dap = as.numeric(dap)) %>% 
-  ggplot(aes(dap,ndvi,color=inter_crop))+
+  mutate(dap = as.numeric(dap)) %>%
+
+ ggplot(aes(dap,ndvi,color=inter_crop))+
   geom_jitter() +
-  geom_smooth(se = TRUE, method = loess,span=1)+
+  stat_summary(fun = "mean", geom="line",linewidth=1)+
   xlab("DAP")+
   ylab("NDVI")+
   scale_color_brewer(palette="Dark2")+
@@ -257,6 +258,10 @@ time_series_plot_data %>%
   theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
   theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
   theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
 
 
 
@@ -489,6 +494,31 @@ Notes:
 <br>
 <br>
 
+###  NDVI maturity
+
+```{r}
+
+time_series_plot_data %>% 
+  pivot_longer(`13`:`278`, names_to = "dap", values_to = "ndvi" ) %>% 
+  mutate(dap = as.numeric(dap)) %>% 
+  filter(dap == 221| dap == 254| dap == 278) %>% 
+  ggplot(aes(dap,ndvi,color=inter_crop))+
+  geom_jitter(width = 3) +
+  geom_smooth(se = TRUE)+
+  xlab("DAP")+
+  ylab("NDVI")+
+  scale_color_brewer(palette="Dark2")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+```
+
 
 
 ### NDVI winter change
@@ -513,6 +543,7 @@ time_series_plot_data %>%
 <br>
 Notes:
   This graph represents the drop in NDVI over the winter. 
+
 
 
 <br>
