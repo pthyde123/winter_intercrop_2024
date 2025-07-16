@@ -215,3 +215,110 @@ plot_data %>%
 
 
 ```
+
+
+### Freeze Damage vs Yield
+
+
+```{r,  echo=FALSE}
+library(lme4)
+library(afex)
+
+data <-plot_data %>% 
+  select(oat_yield,inter_crop,replicate,germplasmName,
+         `Freeze damage severity - 0-9 Rating|CO_350:0005001`) %>%
+  rename(damage = `Freeze damage severity - 0-9 Rating|CO_350:0005001`) %>% 
+  filter(inter_crop != "pea") %>% 
+  mutate(inter_crop = as.factor(inter_crop)) %>% 
+  mutate(replicate = as.factor(replicate)) %>% 
+  mutate(germplasmName = as.factor(germplasmName))
+  
+lm_yield <- lme4::lmer(oat_yield ~ (damage) + (1|germplasmName) + (1|replicate) + (1|inter_crop) , data = data)
+
+
+
+
+df_yield <- as.data.frame(VarCorr(lm_yield))
+vg_yield <- df_yield[df_yield$grp == "germplasmName","vcov"]
+ve_yield <- df_yield[df_yield$grp == "Residual", "vcov"]
+h2_yield <- vg_yield/(vg_yield + ve_yield/(2))
+
+
+print(vc <- VarCorr(lm_yield)) ## default print method: standard dev and corr
+## both variance and std.dev.
+print(vc,comp=c("Variance","Std.Dev."), digits=2)
+## variance only
+print(vc, comp=c("Variance"))
+## standard deviations only, but covariances rather than correlations
+print(vc, corr = FALSE)
+as.data.frame(vc)
+as.data.frame(vc, order="lower.tri")
+
+data <- data %>% 
+  mutate(inter_crop = as.factor(inter_crop)) %>% 
+  mutate(replicate = as.factor(replicate)) %>% 
+  mutate(germplasmName = as.factor(germplasmName))
+
+
+
+
+lm_yield <- lm(oat_yield ~ (damage), data = data)
+
+summary(lm_yield)
+anova(lm_yield)
+as.data.frame(coef(lm_yield))
+
+
+
+
+
+data %>%
+  ggplot(aes(damage,oat_yield))+
+  geom_smooth() +
+  geom_jitter(aes(damage,oat_yield,color=inter_crop),width = 0.25,size=4)+
+  xlab("Freeze Damage")+
+  ylab("Oat Yield g")+
+  scale_color_brewer(palette="Paired")+
+  theme_classic()+
+  theme(axis.text.x=element_text(angle = 90, hjust = 1))+
+  theme(axis.text=element_text(size=20), axis.title=element_text(size=20,face="bold"))+
+  theme(axis.text.x = element_text(face = "bold", color = "black", size = 16))+
+  theme(axis.text.y = element_text(face = "bold", color = "black", size = 16))
+
+
+
+
+
+```
+
+```{r}
+data2 <- data %>%
+  arrange(-oat_yield) %>%
+  head(30) %>%
+  filter(damage<=3)
+unique(data2$germplasmName)
+
+data2 %>% 
+write.table("clipboard", sep="\t", row.names=FALSE)
+
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+
+
